@@ -1,0 +1,87 @@
+# -*- coding: utf-8 -*-
+# vim: ft=jinja
+
+{## Start with defaults from defaults.yaml ##}
+{% import_yaml 'hpsum/defaults.yaml' as local_settings %}
+
+{##
+Add any overrides based on CPU architecture.
+##}
+{% if local_settings.hpsum.sum_type == 'baseline' %}
+{% set os_arch_map = salt['grains.filter_by']({
+        'x86': {
+            "command_bin": '/x86/hpsum_bin_x86',
+            "actual_sum_location": local_settings.hpsum.baseline_localfs,
+        },
+        'x86_64': {
+            "command_bin": '/x64/hpsum_bin_x64',
+            "actual_sum_location": local_settings.hpsum.baseline_localfs,
+        }
+  }
+  , grain="osarch"
+  , merge=salt['pillar.get']('hpsum'))
+%}
+{% elif local_settings.hpsum.sum_type == 'iso' %}
+{% set os_arch_map = salt['grains.filter_by']({
+        'x86': {
+            "command_bin": '/hp/swpackages/x86/hpsum_bin_x86',
+            "actual_sum_location": local_settings.hpsum.baseline_localfs,
+            "iso_location": '/hp/swpackages',
+        },
+        'x86_64': {
+            "command_bin": '/hp/swpackages/x64/hpsum_bin_x64',
+            "actual_sum_location": local_settings.hpsum.baseline_localfs,
+            "iso_location": '/hp/swpackages',
+        }
+  }
+  , grain="osarch"
+  , merge=salt['pillar.get']('hpsum'))
+%}
+{% elif local_settings.hpsum.sum_type == 'local' %}
+{% set os_arch_map = salt['grains.filter_by']({
+        'x86': {
+            "command_bin": '/localhpsum/x86/hpsum_bin_x86',
+            "actual_sum_location": local_settings.hpsum.local_directory,
+        },
+        'x86_64': {
+            "command_bin": '/localhpsum/x64/hpsum_bin_x64',
+            "actual_sum_location": local_settings.hpsum.local_directory,
+        }
+  }
+  , grain="osarch"
+  , merge=salt['pillar.get']('hpsum'))
+%}
+{% else %}
+{% set os_arch_map = salt['grains.filter_by']({
+        '*': {
+            "command_bin": '/bin/hpsum',
+            "actual_sum_location": local_settings.hpsum.nfs_sum_locallocation,
+        },
+  }
+  , grain="osarch"
+  , merge=salt['pillar.get']('hpsum'))
+%}
+
+{% endif %}
+
+{## Set date_time; to be used to create unique logdir folder ##}
+{% set datetime = salt['grains.filter_by']({
+        '*': {
+            "date_time": salt['cmd.run']('/bin/date +%Y%m%d%H%M')
+        },
+  }
+  , grain="osarch"
+  , merge=salt['pillar.get']('hpsum'))
+%}
+
+{## Merge the new variables ##}
+{% do local_settings.hpsum.update(os_arch_map) %}
+{% do local_settings.hpsum.update(datetime) %}
+
+{## Merge in hpsum:* pillar ##}
+{% set hpsum = salt['pillar.get'](
+        'hpsum',
+        default=local_settings.hpsum,
+        merge=True
+    )
+%}

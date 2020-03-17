@@ -1,0 +1,49 @@
+hpsum:
+
+# Base Version of HP SUM supported (set by HPE) - ###
+  basever: "730"
+
+# Upper Version of HP SUM supported (set by HPE) - ###
+  upperver: "760"
+
+# Logfile 'root' directory - no end "/"
+  logdir: /var/tmp/salt
+
+# Use existing customer NFS mount points - boolean True or string based 'False'
+  cust_nfs: True
+
+# Remote NFS server and exported filesystem for HP SUM software - no end "/"
+  sum_remotelocation: "xxx.xxx.xxx.xxx:/opt/mount1/hpsum"
+
+# Clean local store repository before and after run - options boolean False or True
+  local_clean: False
+
+# Remote NFS server and exported filesystem for Firmware baseline
+  baseline_remotefs: 'xxx.xxx.xxx.xxx:/opt/mount1/gen9_7_4_sum'
+
+# Two-phase process i.e. Drivers(software) then Firmware runs. This overrides "selection" parameter - options are False or True
+#  twophase: False
+
+# Report output directory location
+  report_dir: "/tmp/puppet_hpsum_report"
+
+# Specify required report - options are "--report", "--inventory_report", "--firmware_report", "--dependency_report", "--installed_report", and "--combined_report"
+  report_type: "--combined_report"
+
+# Dry run i.e. review HP SUM actions but not perform an upgrade - options are "", or "--dryrun"
+  dryrun: "--dryrun"
+
+# Selection i.e. specify whether HP SUM iteration is Firmware, Driver or both -options are "" (both - default), "--romonly" (Firmware only), or "--softwareonly" (Driver only)
+  selection: ""
+
+# Reboot option for HP SUM command - options are "", "--reboot", or "--reboot_always" with ".... --reboot_delay <seconds>"
+  reboot: ""
+
+# Downgrade option for HP SUM command - options are "", "--g", or "--downgrade"
+  downgrade: "--g"
+
+# Rewrite option for HP SUM command - options are "", "--e", or "--rewrite"
+  rewrite: "--e"
+
+# Dependency option for HP SUM command - options are "", "--on_failed_dependency:OmitComponent", or "--on_failed_dependency:Force"
+  dependency: "--on_failed_dependency:OmitComponent"

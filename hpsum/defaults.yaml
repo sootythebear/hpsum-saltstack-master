@@ -1,0 +1,11 @@
+hpsum:
+# HP SUM NFS mount type - options are 'rw', 'ro', 'local', 'baseline', or 'iso'
+  sum_type: 'ro'
+# Local server mount point for the HP SUM software - no end "/"
+  nfs_sum_locallocation: '/opt/hpsum'
+# Local store repository for copying HP SUM to server - no end "/"
+  local_directory: '/var/tmp'
+# Local server mount point for firmware baseline - no end "/"
+  baseline_localfs: '/opt/gen9_fw'
+# Create report only - options True or False
+  report_only: True
